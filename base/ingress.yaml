@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: notes
+spec:
+  rules:
+    - host: notes.local   # overlay 用 patch 換成 notes-staging.local / notes.local
+      http:
+        paths:
+          # Phase 9 會在這之前插入一條 /api 的規則
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: notes-web
+                port:
+                  number: 80

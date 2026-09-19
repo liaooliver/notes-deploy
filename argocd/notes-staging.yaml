@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: notes-staging
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/liaooliver/notes-deploy.git
+    targetRevision: main             # notes-deploy 只有一條 main
+    path: overlays/staging           # 環境靠「目錄」分，不是靠分支
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: notes-staging
+  syncPolicy:
+    automated:
+      prune: true      # Git 裡刪掉的資源，cluster 也跟著刪
+      selfHeal: true   # 有人手動 kubectl edit 改壞了，Argo CD 自動改回 Git 的版本
+    syncOptions:
+      - CreateNamespace=true

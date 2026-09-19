@@ -1,0 +1,22 @@
+name: Manifest Check
+
+# PR 與 push 都跑。bump commit 是 deploy key 推的，
+# 不像 GITHUB_TOKEN 那樣會被「bot push 不觸發 workflow」的規則擋掉，
+# 所以每次 bump 都會自動驗一次 kustomize 算不算得出來。
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  manifest-check:
+    name: Validate Deploy Manifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: kustomize build
+        run: |
+          for overlay in overlays/*/; do
+            echo "=== ${overlay} ==="
+            kubectl kustomize "${overlay}" > /dev/null || exit 1
+          done

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notes-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notes
+      component: web        # Phase 9 加 api 之後靠這個欄位區分
+  template:
+    metadata:
+      labels:
+        app: notes
+        component: web
+    spec:
+      # repo 是 public 時 GHCR package 也是 public，不需要 secret，先註解掉。
+      # 若改成 private，要先建好 ghcr-pull secret 再套用——順序反了 pod 會卡 ImagePullBackOff。
+      # imagePullSecrets:
+      #   - name: ghcr-pull
+      containers:
+        - name: web
+          image: ghcr.io/liaooliver/notes   # tag 由 overlay 的 images: 覆寫
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits: { cpu: 100m, memory: 64Mi }

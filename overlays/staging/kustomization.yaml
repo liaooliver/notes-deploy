@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: notes-staging
+resources:
+  - ../../base
+images:
+  # Phase 9 加了 api 之後這裡會變成兩筆
+  - name: ghcr.io/liaooliver/notes
+    newTag: sha-0000000000000000000000000000000000000000   # 由 CI 的 kustomize edit set image 覆寫
+patches:
+  - target:
+      kind: Ingress
+      name: notes
+    patch: |
+      - op: replace
+        path: /spec/rules/0/host
+        value: notes-staging.local

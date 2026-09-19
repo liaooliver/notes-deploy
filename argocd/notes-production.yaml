@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: notes-production
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/liaooliver/notes-deploy.git
+    targetRevision: main             # 同一條分支，跟 staging 只差 path
+    path: overlays/production
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: notes-production
+  syncPolicy:
+    # 選項 A：跟 staging 一樣全自動（GitHub Environment Approve 就是唯一人工閘）
+    automated:
+      prune: true
+      selfHeal: true
+    # 選項 B：把 automated 整段拿掉 → 變成 manual sync，
+    #         Argo CD 會顯示 OutOfSync，要人在 UI 按 Sync 才部署（第二道人工閘）
+    syncOptions:
+      - CreateNamespace=true
