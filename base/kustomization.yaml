@@ -3,4 +3,6 @@ kind: Kustomization
 resources:
   - web-deployment.yaml
   - web-service.yaml
+  - api-deployment.yaml
+  - api-service.yaml
   - ingress.yaml

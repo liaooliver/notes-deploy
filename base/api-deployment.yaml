@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notes-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notes
+      component: api        # ← 跟 web 的差別只有這個欄位
+  template:
+    metadata:
+      labels:
+        app: notes
+        component: api
+    spec:
+      # repo 是 public 時 GHCR package 也可以是 public，不需要 secret，先註解掉。
+      # 改成 private 時，web 與 api 兩份 Deployment 要一起取消註解。
+      # imagePullSecrets:
+      #   - name: ghcr-pull
+      containers:
+        - name: api
+          image: ghcr.io/liaooliver/notes-api   # 另一個 image，tag 由 overlay 覆寫
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /api/health                 # Express 實作的那條
+              port: 3000
+          resources:
+            requests: { cpu: 10m, memory: 32Mi }
+            limits: { cpu: 200m, memory: 128Mi }
+      # 沒有 volume：資料就放在 Express 的記憶體裡，pod 一重建就全沒了。
+      # 這是刻意的——容器本來就該被當成可拋棄的，要持久化得用 StatefulSet + PV。

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: notes-api
+spec:
+  selector:
+    app: notes
+    component: api        # 少了這行就會連 web 的 pod 一起選到，流量隨機打錯地方
+  ports:
+    - port: 3000
+      targetPort: 3000
