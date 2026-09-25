@@ -13,11 +13,12 @@ spec:
     server: https://kubernetes.default.svc
     namespace: notes-production
   syncPolicy:
-    # 選項 A：跟 staging 一樣全自動（GitHub Environment Approve 就是唯一人工閘）
+    # 跟 staging 一樣全自動。人工閘只有一道，而且在上游的 GitHub Environment：
+    # 沒人按 Approve，CI 就不會改 overlays/production 的 image tag，Git 裡的
+    # desired state 不變，Argo CD 也就沒有東西可以 sync。閘已經擋在那裡，
+    # 在 Argo CD 再擋一次只會多一個容易忘記按的地方。
     automated:
-      prune: true
-      selfHeal: true
-    # 選項 B：把 automated 整段拿掉 → 變成 manual sync，
-    #         Argo CD 會顯示 OutOfSync，要人在 UI 按 Sync 才部署（第二道人工閘）
+      prune: true      # Git 裡刪掉的資源，cluster 也跟著刪
+      selfHeal: true   # 有人手動 kubectl edit 改壞了，Argo CD 自動改回 Git 的版本
     syncOptions:
       - CreateNamespace=true
