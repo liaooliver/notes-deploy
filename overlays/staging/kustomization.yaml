@@ -7,10 +7,10 @@ resources:
 images:
 - name: ghcr.io/liaooliver/notes
   newName: ghcr.io/liaooliver/notes
-  newTag: sha-9b510dfc4eafecd1db151db87f725e8eb274450c
+  newTag: sha-64430d0759dbc47064cac1ce9f21beebb84bc192
 - name: ghcr.io/liaooliver/notes-api
   newName: ghcr.io/liaooliver/notes-api
-  newTag: sha-9b510dfc4eafecd1db151db87f725e8eb274450c
+  newTag: sha-64430d0759dbc47064cac1ce9f21beebb84bc192
 patches:
 - patch: |
     - op: replace
